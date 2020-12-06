@@ -1,68 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import './styles.scss';
+import MainPage from './MainPage';
+import DetailPage from './DetailPage';
 
 function App() {
+    const [currentView, setCurrentView] = useState("main");
+    const [allPokemonLoaded, setAllPokemonLoaded] = useState(false);
+    const [loadingFailed, setLoadingFailed] = useState(false);
     const [allPokemon, setAllPokemon] = useState([]);
-    const [filteredPokemonList, setFilteredPokemonList] = useState([]);
-    const [searchValue, setSearchValue] = useState("");
+    const [detailedPokemon, setDetailedPokemon] = useState();
 
     useEffect(() => {
         fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
         .then(res => res.json())
         .then(res => {
             console.log(res);
+            setAllPokemonLoaded(true);
             setAllPokemon(res.results);
-            setFilteredPokemonList(res.results);
             // https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png
         })
         .catch(() => {
+            setLoadingFailed(true);
             alert("failed to get pokemon list");
         });
     }, []);
 
-    // split url value of /pokemon api to get the id
-    const getPokeId = (pokeUrl) => {
-        let split = pokeUrl.split("/");
-        let index = split[split.length - 2];
-        return index;
+    const viewDetail = (pokemon) => {
+        setCurrentView("detail");
+        setDetailedPokemon(pokemon);
     }
-
-    const updateSearchValue = (searchVal) => {
-        setSearchValue(searchVal);
-        // TODO: use setTimeout to wait for user to finish typing
-        getFilteredPokemonList(searchVal);
-    }
-
-    const getFilteredPokemonList = (searchVal) => {
-        if (!searchValue) {
-            return allPokemon;
+    let page;
+    if (allPokemonLoaded) {
+        if (currentView === "main") {
+            page = <MainPage viewDetail={viewDetail} allPokemon={allPokemon} />;
+        } else {
+            page =  <DetailPage pokemon={detailedPokemon} backToMain={() => {setCurrentView("main")}} />;
         }
-        searchVal = searchVal.toLowerCase();
-        setFilteredPokemonList(allPokemon.filter((pokemon) => {
-            // TODO: consider showing matches that contain rather than start with
-            return pokemon.name.toLowerCase().startsWith(searchVal);
-        }));
+    } else if (loadingFailed) {
+        page = "Failed to load Pokemon";
+    } else {
+        page = "Loading...";
     }
-
     return (
         <div className="App">
-            <div className="flexContainer">
-                <input placeholder="search" type="search" value={searchValue} onChange={(e) => {updateSearchValue(e.target.value)}} />
-            </div>
-            <div className="flexContainer">
-            {filteredPokemonList.map((pokemon) => {
-                let id = getPokeId(pokemon.url);
-                let imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-                return <div key={id} className="card">
-                        <img className="cardImg" src={imgSrc} />
-                        <div className="label">{pokemon.name}</div>
-                </div>
-            })}
-            </div>
+            {page}
         </div>
     );
 }
 
 export default App;
-
