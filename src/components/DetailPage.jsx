@@ -2,53 +2,17 @@ import { useEffect, useState } from 'react';
 import Card from "./Card";
 import PokeDetails from "./PokeDetails"
 import GoogleMapReact from 'google-map-react';
+import utils from '../utils';
+
 
 function DetailPage({pokemon, inBag, backToMain, updateBag}) {
     const [pokeDetails, setPokeDetails] = useState(null);
     const [locations, setLocations] = useState(null);
+    const [cache, setCache] = useState({});
 
     useEffect(() => {
-        console.log("detail page update", pokemon)
-
-        fetch(pokemon.url)
-        .then(res => res.json())
-        .then(res => {
-            setPokeDetails(res);
-        })
-        .catch(() => {
-            // setLoadingFailed(true);
-            alert("failed to get pokemon details");
-        });
-
-        fetch(`https://api.craft-demo.net/pokemon/${pokemon.id}`, {
-            method: 'GET',
-            headers: {
-                'X-API-KEY': 'HHko9Fuxf293b3w56zAJ89s3IcO9D5enaEPIg86l',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(res => {
-            console.log(res);
-            if (res.locations) {
-                const locations = res.locations.map((coor) => {
-                    let split = coor.split(",");
-                    return {
-                        lat: parseFloat(split[0]),
-                        lng: parseFloat(split[1]),
-                    }
-                });
-                setLocations(locations);
-            } else {
-                setLocations([]);
-            }
-        })
-        .catch(() => {
-            // setLoadingFailed(true);
-            alert("failed to get pokemon coordinates");
-        });
-
+        utils.getDetails(pokemon, setPokeDetails);
+        utils.getLocations(pokemon, setLocations);
 
     }, [pokemon]);
     const imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`;
@@ -74,8 +38,8 @@ function DetailPage({pokemon, inBag, backToMain, updateBag}) {
                             }}
                             defaultZoom={11}
                         >
-                            {locations.map((location) => {
-                                return <Marker lat={location.lat} lng={location.lng} imgSrc={imgSrc}/>
+                            {locations.map((location, i) => {
+                                return <Marker key={i} lat={location.lat} lng={location.lng} imgSrc={imgSrc}/>
                             })}
                         </GoogleMapReact>
                     }
