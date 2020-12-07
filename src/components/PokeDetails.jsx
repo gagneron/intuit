@@ -20,7 +20,7 @@ function PokeDetails({pokeDetails, pokeId, inBag, updateBag}) {
             </div>
             <div className="abilities">
                 {pokeDetails.abilities.map((ability) => {
-                    return <div key={ability.slow}>
+                    return <div key={ability.slot}>
                             <a  href={ability.ability.url}>{ability.ability.name}</a>
                         </div>
                 })}

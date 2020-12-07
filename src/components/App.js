@@ -12,6 +12,7 @@ function App() {
     const [allPokemon, setAllPokemon] = useState([]);
     const [activePokemon, setActivePokemon] = useState();
     const [bag, setBag] = useState(new Set());
+    const STORAGE_KEY = "storedPokemon2";
 
     useEffect(() => {
         fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
@@ -29,6 +30,16 @@ function App() {
             setLoadingFailed(true);
             alert("failed to get pokemon list");
         });
+
+        let storedPokemon = localStorage.getItem(STORAGE_KEY);
+        try {
+            const storedSet = new Set(storedPokemon);
+            if (storedSet) {
+                setBag(storedSet);
+            }
+        } catch (e) {
+            // don't populate from errored storage
+        }
     }, []);
 
     const viewDetail = (pokemon) => {
@@ -47,7 +58,10 @@ function App() {
         } else {
             newBag.delete(id);
         }
+        console.log("updateBag", newBag)
         setBag(newBag);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...newBag]));
+        console.log("saving", JSON.stringify([...newBag]));
     };
 
     let page;

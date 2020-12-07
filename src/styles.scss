@@ -25,8 +25,41 @@
     margin: 10px;
     padding: 10px;
     border: 1px solid gray;
+    text-align: center;
 
     img {
         width: 200px;
+    }
+}
+
+.filtered {
+    .card:not(.inBag) {
+        display: none;
+    }
+}
+
+.filterWrap {
+    $inactiveColor: lightgray;
+    $activeColor: lightblue;
+    justify-content: center;
+    margin: 20px 0px 10px;
+
+    &.filtered {
+        .all {
+            background-color: $inactiveColor;
+        }
+        .bag {
+            background-color: $activeColor;
+        }
+    }
+
+    .filterBtn {
+        background-color: $inactiveColor;
+        padding: 4px 10px;
+        cursor: pointer;
+    }
+
+    .all {
+        background-color: $activeColor;
     }
 }

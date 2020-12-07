@@ -4,13 +4,14 @@ import Card from "./Card";
 function MainPage({viewDetail, allPokemon, bag}) {
     const [searchValue, setSearchValue] = useState("");
     const [filteredPokemonList, setFilteredPokemonList] = useState([]);
+    const [isBagFiltered, setBagFiltered] = useState(false);
 
     useEffect(() => {
         console.log("main use effect", allPokemon, searchValue)
-        getFilteredPokemonList(searchValue);
+        getSearchFilteredPokemonList(searchValue);
     }, [allPokemon]);
 
-    const getFilteredPokemonList = (searchVal) => {
+    const getSearchFilteredPokemonList = (searchVal) => {
         let filteredList = [];
         if (!searchVal) {
             filteredList = allPokemon;
@@ -29,15 +30,28 @@ function MainPage({viewDetail, allPokemon, bag}) {
     const updateSearchValue = (searchVal) => {
         setSearchValue(searchVal);
         // TODO: use setTimeout to wait for user to finish typing
-        getFilteredPokemonList(searchVal);
+        getSearchFilteredPokemonList(searchVal);
+    }
+
+    // TODO: disable button if filter is on
+    let filterWrapClass = "flexContainer filterWrap";
+    let cardContainerClass = "flexContainer";
+
+    if (isBagFiltered) {
+        filterWrapClass += " filtered";
+        cardContainerClass += " filtered";
     }
 
     return (
         <div className="page mainPage">
+            <div className={filterWrapClass}>
+                <button className="filterBtn all" onClick={() => {setBagFiltered(false)}}>All</button>
+                <button className="filterBtn bag" onClick={() => {setBagFiltered(true)}}>Bag</button>
+            </div>
             <div className="flexContainer">
                 <input placeholder="search" type="search" value={searchValue} onChange={(e) => {updateSearchValue(e.target.value)}} />
             </div>
-            <div className="flexContainer">
+            <div className={cardContainerClass}>
                 {filteredPokemonList.map((pokemon) => {
                     return <Card key={pokemon.name} inBag={bag.has(pokemon.id)} pokemon={pokemon} viewDetail={viewDetail} />
                 })}
