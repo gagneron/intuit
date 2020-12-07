@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { filter } from 'minimatch';
+import Card from "./Card";
 
-function MainPage({viewDetail, allPokemon}) {
+function MainPage({viewDetail, allPokemon, bag}) {
     const [searchValue, setSearchValue] = useState("");
     const [filteredPokemonList, setFilteredPokemonList] = useState([]);
 
@@ -26,7 +26,6 @@ function MainPage({viewDetail, allPokemon}) {
     }
 
 
-
     const updateSearchValue = (searchVal) => {
         setSearchValue(searchVal);
         // TODO: use setTimeout to wait for user to finish typing
@@ -34,34 +33,17 @@ function MainPage({viewDetail, allPokemon}) {
     }
 
     return (
-        <div className="mainPage">
+        <div className="page mainPage">
             <div className="flexContainer">
                 <input placeholder="search" type="search" value={searchValue} onChange={(e) => {updateSearchValue(e.target.value)}} />
             </div>
             <div className="flexContainer">
                 {filteredPokemonList.map((pokemon) => {
-                    return <Card key={pokemon.name} pokemon={pokemon} viewDetail={viewDetail} />
+                    return <Card key={pokemon.name} inBag={bag.has(pokemon.id)} pokemon={pokemon} viewDetail={viewDetail} />
                 })}
             </div>
         </div>
     );
-}
-
-function Card({pokemon, viewDetail}) {
-    // TODO: move to separate utility file
-    // split url value of /pokemon api to get the id
-    const getPokeId = (pokeUrl) => {
-        let split = pokeUrl.split("/");
-        let index = split[split.length - 2];
-        return index;
-    }
-
-    const id = getPokeId(pokemon.url);
-    const imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-    return <div key={id} className="card" onClick={() => {viewDetail(pokemon)}}>
-            <img className="cardImg" src={imgSrc} />
-            <div className="label">{pokemon.name}</div>
-        </div>
 }
 
 export default MainPage;

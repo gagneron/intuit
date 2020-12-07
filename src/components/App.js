@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
-import './styles.scss';
+import '../App.css';
+import '../styles.scss';
 import MainPage from './MainPage';
 import DetailPage from './DetailPage';
+import utils from '../utils';
 
 function App() {
     const [currentView, setCurrentView] = useState("main");
     const [allPokemonLoaded, setAllPokemonLoaded] = useState(false);
     const [loadingFailed, setLoadingFailed] = useState(false);
     const [allPokemon, setAllPokemon] = useState([]);
-    const [detailedPokemon, setDetailedPokemon] = useState();
+    const [activePokemon, setActivePokemon] = useState();
+    const [bag, setBag] = useState(new Set());
 
     useEffect(() => {
         fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
@@ -17,6 +19,9 @@ function App() {
         .then(res => {
             console.log(res);
             setAllPokemonLoaded(true);
+            res.results.forEach((pokemon) => {
+                pokemon.id = utils.getPokeId(pokemon.url)
+            });
             setAllPokemon(res.results);
             // https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png
         })
@@ -28,14 +33,41 @@ function App() {
 
     const viewDetail = (pokemon) => {
         setCurrentView("detail");
-        setDetailedPokemon(pokemon);
+        setActivePokemon(pokemon);
     }
-    let page;
-    if (allPokemonLoaded) {
-        if (currentView === "main") {
-            page = <MainPage viewDetail={viewDetail} allPokemon={allPokemon} />;
+
+    const backToMain = () => {
+        setCurrentView("main");
+    };
+
+    const updateBag = (id, inBag) => {
+        let newBag = new Set(bag);
+        if (inBag) {
+            newBag.add(id);
         } else {
-            page =  <DetailPage pokemon={detailedPokemon} backToMain={() => {setCurrentView("main")}} />;
+            newBag.delete(id);
+        }
+        setBag(newBag);
+    };
+
+    let page;
+    let className = "app";
+    if (allPokemonLoaded) {
+        page = <React.Fragment>
+                 <MainPage viewDetail={viewDetail} allPokemon={allPokemon} bag={bag} />
+                 {activePokemon &&
+                    <DetailPage
+                        pokemon={activePokemon}
+                        inBag={bag.has(activePokemon.id)}
+                        backToMain={backToMain}
+                        updateBag={updateBag}
+                    />
+                }
+            </React.Fragment>;
+        if (currentView === "main") {
+            className += " mainActive";
+        } else {
+            className += " detailActive";
         }
     } else if (loadingFailed) {
         page = "Failed to load Pokemon";
@@ -43,7 +75,7 @@ function App() {
         page = "Loading...";
     }
     return (
-        <div className="App">
+        <div className={className}>
             {page}
         </div>
     );
