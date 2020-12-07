@@ -63,3 +63,12 @@
         background-color: $activeColor;
     }
 }
+
+.detailsWrap {
+    display: flex;
+}
+
+.detailsSection {
+    flex: 1 1 50%;
+    padding: 0px 20px;
+}

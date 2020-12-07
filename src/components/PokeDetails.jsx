@@ -19,6 +19,7 @@ function PokeDetails({pokeDetails, pokeId, inBag, updateBag}) {
                 <LoremIpsum />
             </div>
             <div className="abilities">
+                <h5>Abilities</h5>
                 {pokeDetails.abilities.map((ability) => {
                     return <div key={ability.slot}>
                             <a  href={ability.ability.url}>{ability.ability.name}</a>

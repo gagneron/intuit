@@ -12,7 +12,7 @@ function App() {
     const [allPokemon, setAllPokemon] = useState([]);
     const [activePokemon, setActivePokemon] = useState();
     const [bag, setBag] = useState(new Set());
-    const STORAGE_KEY = "storedPokemon2";
+    const STORAGE_KEY = "storedPokemon";
 
     useEffect(() => {
         fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
