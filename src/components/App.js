@@ -18,7 +18,6 @@ function App() {
         fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
         .then(res => res.json())
         .then(res => {
-            console.log(res);
             setAllPokemonLoaded(true);
             res.results.forEach((pokemon) => {
                 pokemon.id = utils.getPokeId(pokemon.url)
@@ -58,10 +57,8 @@ function App() {
         } else {
             newBag.delete(id);
         }
-        console.log("updateBag", newBag)
         setBag(newBag);
         localStorage.setItem(STORAGE_KEY, JSON.stringify([...newBag]));
-        console.log("saving", JSON.stringify([...newBag]));
     };
 
     let page;

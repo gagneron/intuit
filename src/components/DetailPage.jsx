@@ -24,7 +24,6 @@ function DetailPage({pokemon, inBag, backToMain, updateBag}) {
                 <div className="detailsSection">
                     <Card pokemon={pokemon} />
                     {pokeDetails &&
-
                         <PokeDetails pokeDetails={pokeDetails} pokeId={pokemon.id} inBag={inBag} updateBag={updateBag} />
                     }
                 </div>

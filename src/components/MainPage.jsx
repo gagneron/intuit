@@ -7,7 +7,6 @@ function MainPage({viewDetail, allPokemon, bag}) {
     const [isBagFiltered, setBagFiltered] = useState(false);
 
     useEffect(() => {
-        console.log("main use effect", allPokemon, searchValue)
         getSearchFilteredPokemonList(searchValue);
     }, [allPokemon]);
 
